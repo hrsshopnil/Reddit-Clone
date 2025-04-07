@@ -18,8 +18,8 @@ class UserModel {
     required this.isAuthenticated,
     required this.karma,
     required this.awards,
-    required List<String> communities,
-  }) : communities = communities;
+    required this.communities,
+  });
 
   UserModel copyWith({
     String? name,

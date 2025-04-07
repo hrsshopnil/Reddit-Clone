@@ -58,6 +58,7 @@ class CommunityViewmodel extends StateNotifier<bool> {
 
   Stream<List<Community>> getUserCommunities() {
     final user = _ref.read(userProvider)!;
+    //print(user.communities);
     return _communityRepository.getUserCommunities(user.communities);
   }
 
