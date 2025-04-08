@@ -7,8 +7,11 @@ import 'package:reddit_clone/features/community/model/community_model.dart';
 import 'package:reddit_clone/features/community/repository/community_repository.dart';
 
 final userCommunitiesProvider = StreamProvider<List<Community>>((ref) {
-  final communityViewModel = ref.watch(communityViewModelProvider.notifier);
-  return communityViewModel.getUserCommunities();
+  final user = ref.watch(userProvider);
+  if (user == null) return const Stream.empty();
+
+  final communityRepo = ref.watch(communityRepositoryProvider);
+  return communityRepo.getUserCommunities(user.communities);
 });
 
 final communityViewModelProvider =
@@ -38,30 +41,34 @@ class CommunityViewmodel extends StateNotifier<bool> {
 
   void createCommunity(String name, BuildContext context) async {
     state = true;
-    final uid = _ref.read(userProvider)?.uid ?? '';
+
+    final user = _ref.read(userProvider);
+    if (user == null) {
+      showSnackBar(context, 'User not logged in');
+      state = false;
+      return;
+    }
+
     Community community = Community(
       id: name,
       name: name,
       banner: Constants.bannerDefault,
       avatar: Constants.avatarDefault,
-      members: [uid],
-      mods: [uid],
+      members: [user.uid],
+      mods: [user.uid],
     );
 
-    final res = await _communityRepository.createCommunity(community);
+    final res = await _communityRepository.createCommunity(community, user.uid);
+
     state = false;
+
     res.fold(
       (l) => showSnackBar(context, l.message),
       (r) => Navigator.pop(context),
     );
   }
 
-  Stream<List<Community>> getUserCommunities() {
-    final user = _ref.read(userProvider)!;
-    //print(user.communities);
-    return _communityRepository.getUserCommunities(user.communities);
-  }
-
+  // Only used by getCommunityByNameProvider now
   Stream<Community> getCommunityByName(String name) {
     return _communityRepository.getCommunityByName(name);
   }

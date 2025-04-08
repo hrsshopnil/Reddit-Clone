@@ -19,16 +19,24 @@ class CommunityRepository {
   CollectionReference get _communities =>
       _firebaseFirestore.collection('communities');
 
-  FutureVoid createCommunity(Community community) async {
+  CollectionReference get _users => _firebaseFirestore.collection('users');
+
+  FutureVoid createCommunity(Community community, String uid) async {
     try {
       var communityDoc = await _communities.doc(community.name).get();
       if (communityDoc.exists) {
         throw 'Community with the same name already exists';
       }
+
       await _communities.doc(community.name).set(community.toMap());
+
+      await _users.doc(uid).update({
+        'communities': FieldValue.arrayUnion([community.name]),
+      });
+
       return right(null);
     } on FirebaseException catch (e) {
-      throw e.message!;
+      return left(Failure(e.message!));
     } catch (e) {
       return left(Failure(e.toString()));
     }
@@ -54,11 +62,10 @@ class CommunityRepository {
   }
 
   Stream<Community> getCommunityByName(String name) {
-    return _communities
-        .doc(name)
-        .snapshots()
-        .map(
-          (event) => Community.fromMap(event.data() as Map<String, dynamic>),
-        );
+    return _communities.doc(name).snapshots().map((event) {
+      final data = event.data();
+      if (data == null) throw Exception('Community not found');
+      return Community.fromMap(data as Map<String, dynamic>);
+    });
   }
 }

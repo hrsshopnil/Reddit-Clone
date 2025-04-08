@@ -29,6 +29,10 @@ class _MyAppState extends ConsumerState<MyApp> {
   UserModel? user;
 
   void getData(WidgetRef ref, User data) async {
+    final _ = StreamProvider.family<UserModel, String>((ref, uid) {
+      return ref.watch(authViewModelProvider.notifier).getUserData(uid);
+    });
+
     user =
         await ref
             .watch(authViewModelProvider.notifier)
