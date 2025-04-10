@@ -68,4 +68,34 @@ class CommunityRepository {
       return Community.fromMap(data as Map<String, dynamic>);
     });
   }
+
+  FutureVoid editCommunity(Community community) async {
+    try {
+      final updatedCommunity = _communities
+          .doc(community.name)
+          .update(community.toMap());
+      return right(updatedCommunity);
+    } catch (e) {
+      return left(Failure(e.toString()));
+    }
+  }
+
+  Stream<List<Community>> searchCommunity(String query) {
+    return _communities
+        .where(
+          'name',
+          isGreaterThanOrEqualTo: query.isEmpty ? 0 : query,
+          isLessThan: '$query\uf8ff',
+        )
+        .snapshots()
+        .map((event) {
+          List<Community> communities = [];
+          for (var doc in event.docs) {
+            communities.add(
+              Community.fromMap(doc.data() as Map<String, dynamic>),
+            );
+          }
+          return communities;
+        });
+  }
 }

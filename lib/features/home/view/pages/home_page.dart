@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:reddit_clone/features/auth/view_model/auth_view_model.dart';
+import 'package:reddit_clone/features/community/viewmodel/community_viewmodel.dart';
+import 'package:reddit_clone/features/home/view/delegates/search_community_delegate.dart';
 import 'package:reddit_clone/features/home/view/drawers/community_list_drawer.dart';
 
 class HomePage extends ConsumerWidget {
@@ -26,7 +28,15 @@ class HomePage extends ConsumerWidget {
           },
         ),
         actions: [
-          IconButton(onPressed: () {}, icon: const Icon(Icons.search)),
+          IconButton(
+            onPressed: () {
+              showSearch(
+                context: context,
+                delegate: SearchCommunityDelegate(ref),
+              );
+            },
+            icon: const Icon(Icons.search),
+          ),
           IconButton(
             onPressed: () {},
             icon: CircleAvatar(backgroundImage: NetworkImage(user.profilePic)),

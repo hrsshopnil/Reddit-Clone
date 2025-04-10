@@ -6,7 +6,7 @@ class ModeToolsPage extends StatelessWidget {
   const ModeToolsPage({super.key, required this.name});
 
   void navigateToEditCommunity(BuildContext context) {
-    Routemaster.of(context).push('/edit-community/$name');
+    Routemaster.of(context).push('/edit_community/$name');
   }
 
   @override
@@ -23,7 +23,7 @@ class ModeToolsPage extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.edit),
             title: Text("Edit Community"),
-            onTap: () {},
+            onTap: () => navigateToEditCommunity(context),
           ),
         ],
       ),

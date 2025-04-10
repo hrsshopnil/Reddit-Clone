@@ -7,7 +7,7 @@ import 'package:reddit_clone/features/community/model/community_model.dart';
 import 'package:reddit_clone/features/community/repository/community_repository.dart';
 
 final userCommunitiesProvider = StreamProvider<List<Community>>((ref) {
-  final user = ref.watch(userProvider);
+  final user = ref.read(userProvider);
   if (user == null) return const Stream.empty();
 
   final communityRepo = ref.watch(communityRepositoryProvider);
@@ -26,6 +26,11 @@ final getCommunityByNameProvider = StreamProvider.family((ref, String name) {
   return ref
       .watch(communityViewModelProvider.notifier)
       .getCommunityByName(name);
+});
+
+final searchCommunityProvider = StreamProvider.family((ref, String query) {
+  final communityRepo = ref.watch(communityRepositoryProvider);
+  return communityRepo.searchCommunity(query);
 });
 
 class CommunityViewmodel extends StateNotifier<bool> {
@@ -71,5 +76,9 @@ class CommunityViewmodel extends StateNotifier<bool> {
   // Only used by getCommunityByNameProvider now
   Stream<Community> getCommunityByName(String name) {
     return _communityRepository.getCommunityByName(name);
+  }
+
+  Stream<List<Community>> searchCommunity(String query) {
+    return _communityRepository.searchCommunity(query);
   }
 }
