@@ -80,6 +80,34 @@ class CommunityRepository {
     }
   }
 
+  FutureVoid joinCummuniy(String communityName, String uid) async {
+    try {
+      await _users.doc(uid).update({
+        'communities': FieldValue.arrayUnion([communityName]),
+      });
+      await _communities.doc(communityName).update({
+        'members': FieldValue.arrayUnion([uid]),
+      });
+      return right(null);
+    } catch (e) {
+      return left(Failure(e.toString()));
+    }
+  }
+
+  FutureVoid leaveCummuniy(String communityName, String uid) async {
+    try {
+      await _users.doc(uid).update({
+        'communities': FieldValue.arrayRemove([communityName]),
+      });
+      await _communities.doc(communityName).update({
+        'members': FieldValue.arrayRemove([uid]),
+      });
+      return right(null);
+    } catch (e) {
+      return left(Failure(e.toString()));
+    }
+  }
+
   Stream<List<Community>> searchCommunity(String query) {
     return _communities
         .where(
@@ -97,5 +125,15 @@ class CommunityRepository {
           }
           return communities;
         });
+  }
+
+  FutureVoid addMods(String communityName, List<String> uids) async {
+    try {
+      return right(_communities.doc(communityName).update({'mods': uids}));
+    } on FirebaseException catch (e) {
+      throw e.message!;
+    } catch (e) {
+      return left(Failure(e.toString()));
+    }
   }
 }

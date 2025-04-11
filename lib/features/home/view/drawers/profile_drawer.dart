@@ -1,13 +1,17 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:reddit_clone/features/auth/view_model/auth_view_model.dart';
+import 'package:routemaster/routemaster.dart';
 
 class ProfileDrawer extends ConsumerWidget {
   const ProfileDrawer({super.key});
 
   void logOut(WidgetRef ref) {
     ref.read(authViewModelProvider.notifier).logout();
+  }
+
+  void navigateToUserProfile(BuildContext context, String uid) {
+    Routemaster.of(context).push('/u/$uid');
   }
 
   @override
@@ -22,16 +26,19 @@ class ProfileDrawer extends ConsumerWidget {
               radius: 70,
             ),
             const SizedBox(height: 10),
-            Text(
-              user.name,
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+            GestureDetector(
+              onTap: () => print(user.name),
+              child: Text(
+                user.name,
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+              ),
             ),
             const SizedBox(height: 10),
             const Divider(),
             ListTile(
               title: const Text("My Profile"),
               leading: const Icon(Icons.person),
-              onTap: () {},
+              onTap: () => navigateToUserProfile(context, user.uid),
             ),
             ListTile(
               title: const Text("Log out"),

@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fpdart/fpdart.dart';
 import 'package:reddit_clone/core/constants/constants.dart';
+import 'package:reddit_clone/core/failure.dart';
 import 'package:reddit_clone/core/utils.dart';
 import 'package:reddit_clone/features/auth/view_model/auth_view_model.dart';
 import 'package:reddit_clone/features/community/model/community_model.dart';
 import 'package:reddit_clone/features/community/repository/community_repository.dart';
+import 'package:routemaster/routemaster.dart';
 
 final userCommunitiesProvider = StreamProvider<List<Community>>((ref) {
   final user = ref.read(userProvider);
   if (user == null) return const Stream.empty();
-
   final communityRepo = ref.watch(communityRepositoryProvider);
   return communityRepo.getUserCommunities(user.communities);
 });
@@ -80,5 +82,43 @@ class CommunityViewmodel extends StateNotifier<bool> {
 
   Stream<List<Community>> searchCommunity(String query) {
     return _communityRepository.searchCommunity(query);
+  }
+
+  void joinCommunity(Community community, BuildContext context) async {
+    final user = _ref.read(userProvider);
+
+    Either<Failure, void> res;
+
+    if (community.members.contains(user?.uid)) {
+      res = await _communityRepository.leaveCummuniy(
+        community.name,
+        user?.uid ?? '',
+      );
+    } else {
+      res = await _communityRepository.joinCummuniy(
+        community.name,
+        user?.uid ?? '',
+      );
+    }
+
+    res.fold((l) => showSnackBar(context, l.message), (r) {
+      if (community.members.contains(user?.uid)) {
+        showSnackBar(context, 'Community left successfully');
+      } else {
+        showSnackBar(context, 'Community joined successfully');
+      }
+    });
+  }
+
+  void addMods(
+    String communityName,
+    List<String> uids,
+    BuildContext context,
+  ) async {
+    final res = await _communityRepository.addMods(communityName, uids);
+    res.fold(
+      (l) => showSnackBar(context, l.message),
+      (r) => Routemaster.of(context).pop(),
+    );
   }
 }

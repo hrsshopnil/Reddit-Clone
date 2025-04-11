@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:reddit_clone/features/auth/view/pages/login_page.dart';
+import 'package:reddit_clone/features/community/view/pages/add_mods_page.dart';
 import 'package:reddit_clone/features/community/view/pages/community_page.dart';
 import 'package:reddit_clone/features/community/view/pages/create_community_page.dart';
 import 'package:reddit_clone/features/community/view/pages/edit_community_page.dart';
 import 'package:reddit_clone/features/community/view/pages/mode_tools_page.dart';
 import 'package:reddit_clone/features/home/view/pages/home_page.dart';
+import 'package:reddit_clone/features/user_profile/view/user_profile_page.dart';
 import 'package:routemaster/routemaster.dart';
 
 final loggedOutRoute = RouteMap(
@@ -27,6 +29,14 @@ final loggedInRoute = RouteMap(
     '/edit_community/:name':
         (route) => MaterialPage(
           child: EditCommunityPage(name: route.pathParameters['name']!),
+        ),
+    '/add_mods/:name':
+        (route) => MaterialPage(
+          child: AddModsPage(name: route.pathParameters['name']!),
+        ),
+    '/u/:uid':
+        (route) => MaterialPage(
+          child: UserProfilePage(uid: route.pathParameters['uid']!),
         ),
   },
 );

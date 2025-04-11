@@ -29,7 +29,6 @@ class SearchCommunityDelegate extends SearchDelegate {
 
   @override
   Widget buildResults(BuildContext context) {
-    // TODO: implement buildResults
     throw UnimplementedError();
   }
 
@@ -41,7 +40,7 @@ class SearchCommunityDelegate extends SearchDelegate {
           data:
               (communities) => ListView.builder(
                 itemCount: communities.length,
-                itemBuilder: (BuildContext, int index) {
+                itemBuilder: (context, int index) {
                   final community = communities[index];
                   return ListTile(
                     leading: CircleAvatar(

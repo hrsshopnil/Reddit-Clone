@@ -9,6 +9,7 @@ import 'package:reddit_clone/core/failure.dart';
 import 'package:reddit_clone/core/models/user_model.dart';
 import 'package:reddit_clone/core/providers/firebase_provider.dart';
 import 'package:reddit_clone/core/typedef.dart';
+import 'package:collection/collection.dart';
 
 final authRepositoryProvider = Provider(
   (ref) => AuthRepository(
@@ -74,12 +75,15 @@ class AuthRepository {
   }
 
   Stream<UserModel> getUserData(String uid) {
-    return userRef
+    final user = userRef
         .doc(uid)
         .snapshots()
-        .map(
-          (event) => UserModel.fromMap(event.data() as Map<String, dynamic>),
+        .map((event) => UserModel.fromMap(event.data() as Map<String, dynamic>))
+        .distinct(
+          (prev, next) =>
+              const DeepCollectionEquality().equals(prev.toMap(), next.toMap()),
         );
+    return user;
   }
 
   void logout() async {
