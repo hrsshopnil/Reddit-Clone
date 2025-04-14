@@ -6,6 +6,8 @@ import 'package:reddit_clone/features/community/view/pages/create_community_page
 import 'package:reddit_clone/features/community/view/pages/edit_community_page.dart';
 import 'package:reddit_clone/features/community/view/pages/mode_tools_page.dart';
 import 'package:reddit_clone/features/home/view/pages/home_page.dart';
+import 'package:reddit_clone/features/posts/pages/add_post_type_page.dart';
+import 'package:reddit_clone/features/user_profile/view/edit_profile_page.dart';
 import 'package:reddit_clone/features/user_profile/view/user_profile_page.dart';
 import 'package:routemaster/routemaster.dart';
 
@@ -37,6 +39,14 @@ final loggedInRoute = RouteMap(
     '/u/:uid':
         (route) => MaterialPage(
           child: UserProfilePage(uid: route.pathParameters['uid']!),
+        ),
+    '/edit_profile/:uid':
+        (route) => MaterialPage(
+          child: EditProfilePage(uid: route.pathParameters['uid']!),
+        ),
+    '/add_post/:type':
+        (route) => MaterialPage(
+          child: AddPostTypePage(type: route.pathParameters['type']!),
         ),
   },
 );

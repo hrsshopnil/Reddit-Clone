@@ -75,15 +75,21 @@ class AuthRepository {
   }
 
   Stream<UserModel> getUserData(String uid) {
-    final user = userRef
+    return userRef
         .doc(uid)
         .snapshots()
-        .map((event) => UserModel.fromMap(event.data() as Map<String, dynamic>))
-        .distinct(
-          (prev, next) =>
-              const DeepCollectionEquality().equals(prev.toMap(), next.toMap()),
-        );
-    return user;
+        .where((snapshot) => snapshot.exists) // Ensure document exists
+        .map((snapshot) {
+          final data = snapshot.data() as Map<String, dynamic>;
+          return UserModel.fromMap(data);
+        })
+        .distinct((prev, next) {
+          // Compare the serialized maps to ensure deep equality
+          return const DeepCollectionEquality().equals(
+            prev.toMap(),
+            next.toMap(),
+          );
+        });
   }
 
   void logout() async {

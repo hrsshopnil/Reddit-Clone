@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:reddit_clone/core/theme/pallete.dart';
 import 'package:reddit_clone/features/auth/view_model/auth_view_model.dart';
 import 'package:routemaster/routemaster.dart';
 
@@ -14,6 +15,10 @@ class ProfileDrawer extends ConsumerWidget {
     Routemaster.of(context).push('/u/$uid');
   }
 
+  void toogleTheme(WidgetRef ref) {
+    ref.read(themeNotifierProvider.notifier).toggleTheme();
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(userProvider)!;
@@ -26,12 +31,9 @@ class ProfileDrawer extends ConsumerWidget {
               radius: 70,
             ),
             const SizedBox(height: 10),
-            GestureDetector(
-              onTap: () => print(user.name),
-              child: Text(
-                user.name,
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-              ),
+            Text(
+              user.name,
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
             ),
             const SizedBox(height: 10),
             const Divider(),
@@ -45,7 +47,12 @@ class ProfileDrawer extends ConsumerWidget {
               leading: const Icon(Icons.logout, color: Colors.red),
               onTap: () => logOut(ref),
             ),
-            Switch.adaptive(value: true, onChanged: (value) {}),
+            Switch.adaptive(
+              value:
+                  ref.watch(themeNotifierProvider.notifier).mode ==
+                  ThemeMode.dark,
+              onChanged: (value) => toogleTheme(ref),
+            ),
           ],
         ),
       ),

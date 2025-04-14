@@ -5,11 +5,15 @@ import 'package:reddit_clone/core/widgets/error_text.dart';
 import 'package:reddit_clone/core/widgets/loader.dart';
 import 'package:reddit_clone/features/auth/view_model/auth_view_model.dart';
 import 'package:reddit_clone/features/community/view/widgets/join_button.dart';
-import 'package:reddit_clone/features/community/viewmodel/community_viewmodel.dart';
+import 'package:routemaster/routemaster.dart';
 
 class UserProfilePage extends ConsumerWidget {
   final String uid;
   const UserProfilePage({super.key, required this.uid});
+
+  void navigateToEditProfile(BuildContext context) {
+    Routemaster.of(context).push('/edit_profile/$uid');
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -41,7 +45,6 @@ class UserProfilePage extends ConsumerWidget {
                                 radius: 35,
                               ),
                             ),
-                            JoinButton(text: 'Join', onPressed: () {}),
                           ],
                         ),
                       ),
@@ -49,6 +52,11 @@ class UserProfilePage extends ConsumerWidget {
                         padding: const EdgeInsets.all(16),
                         sliver: SliverList(
                           delegate: SliverChildListDelegate([
+                            JoinButton(
+                              text: 'EditProfile',
+                              onPressed: () => navigateToEditProfile(context),
+                            ),
+                            SizedBox(height: 15),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -62,9 +70,9 @@ class UserProfilePage extends ConsumerWidget {
                               ],
                             ),
                             const SizedBox(width: 10),
-                            Text(user.karma.toString()),
+                            Text('Karma ${user.karma}'),
                             const SizedBox(height: 10),
-                            const Divider(thickness: 2),
+                            const Divider(thickness: 1),
                           ]),
                         ),
                       ),

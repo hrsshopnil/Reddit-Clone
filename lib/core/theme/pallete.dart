@@ -1,4 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+final themeNotifierProvider = StateNotifierProvider<ThemeNotifier, ThemeData>((
+  ref,
+) {
+  return ThemeNotifier();
+});
 
 class Pallete {
   // Colors
@@ -13,43 +21,17 @@ class Pallete {
   static var darkModeAppTheme = ThemeData.dark().copyWith(
     scaffoldBackgroundColor: blackColor,
     cardColor: greyColor,
-    colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.blue).copyWith(
-      surface: blackColor,
-      brightness: Brightness.dark,
-      onSurface: whiteColor,
-    ),
     appBarTheme: const AppBarTheme(
       backgroundColor: drawerColor,
       iconTheme: IconThemeData(color: whiteColor),
     ),
     drawerTheme: const DrawerThemeData(backgroundColor: drawerColor),
     primaryColor: redColor,
-    listTileTheme: const ListTileThemeData(
-      textColor: whiteColor,
-      iconColor: whiteColor,
-    ),
-    textTheme: TextTheme(
-      bodyLarge: const TextStyle(color: whiteColor),
-      bodyMedium: const TextStyle(color: whiteColor),
-      bodySmall: const TextStyle(color: whiteColor),
-      displayLarge: const TextStyle(color: whiteColor),
-      displayMedium: const TextStyle(color: whiteColor),
-      displaySmall: const TextStyle(color: whiteColor),
-      headlineLarge: const TextStyle(color: whiteColor),
-      headlineMedium: const TextStyle(color: whiteColor),
-      headlineSmall: const TextStyle(color: whiteColor),
-      titleLarge: const TextStyle(color: whiteColor),
-      titleMedium: const TextStyle(color: whiteColor),
-      titleSmall: const TextStyle(color: whiteColor),
-      labelLarge: const TextStyle(color: whiteColor),
-      labelMedium: const TextStyle(color: whiteColor),
-      labelSmall: const TextStyle(color: whiteColor),
-    ),
+    colorScheme: ThemeData.dark().colorScheme.copyWith(background: drawerColor),
   );
 
   static var lightModeAppTheme = ThemeData.light().copyWith(
     scaffoldBackgroundColor: whiteColor,
-    colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.blue),
     cardColor: greyColor,
     appBarTheme: const AppBarTheme(
       backgroundColor: whiteColor,
@@ -58,5 +40,44 @@ class Pallete {
     ),
     drawerTheme: const DrawerThemeData(backgroundColor: whiteColor),
     primaryColor: redColor,
+    colorScheme: ThemeData.light().colorScheme.copyWith(background: whiteColor),
   );
+}
+
+class ThemeNotifier extends StateNotifier<ThemeData> {
+  ThemeMode _mode;
+  ThemeNotifier({ThemeMode mode = ThemeMode.dark})
+    : _mode = mode,
+      super(Pallete.darkModeAppTheme) {
+    getTheme();
+  }
+
+  ThemeMode get mode => _mode;
+
+  void getTheme() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final theme = prefs.getString('theme');
+
+    if (theme == 'light') {
+      _mode = ThemeMode.light;
+      state = Pallete.lightModeAppTheme;
+    } else {
+      _mode = ThemeMode.dark;
+      state = Pallete.darkModeAppTheme;
+    }
+  }
+
+  void toggleTheme() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    if (_mode == ThemeMode.dark) {
+      _mode = ThemeMode.light;
+      state = Pallete.lightModeAppTheme;
+      prefs.setString('theme', 'light');
+    } else {
+      _mode = ThemeMode.dark;
+      state = Pallete.darkModeAppTheme;
+      prefs.setString('theme', 'dark');
+    }
+  }
 }
