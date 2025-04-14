@@ -15,6 +15,14 @@ final addPostViewModelProvider = StateNotifierProvider<AddPostViewmodel, bool>(
   ),
 );
 
+final getUserPostsProvider = StreamProvider.family((
+  ref,
+  List<Community> communities,
+) {
+  final addPostViewModel = ref.watch(addPostViewModelProvider.notifier);
+  return addPostViewModel.getUserPosts(communities);
+});
+
 class AddPostViewmodel extends StateNotifier<bool> {
   final AddPostRepository _addPostRepository;
   final Ref _ref;
@@ -61,5 +69,12 @@ class AddPostViewmodel extends StateNotifier<bool> {
       (l) => showSnackBar(context, l.message),
       (r) => Routemaster.of(context).pop(),
     );
+  }
+
+  Stream<List<Post>> getUserPosts(List<Community> communities) {
+    if (communities.isNotEmpty) {
+      return _addPostRepository.getUserPosts(communities);
+    }
+    return Stream.value([]);
   }
 }
