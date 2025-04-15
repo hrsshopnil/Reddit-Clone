@@ -11,6 +11,7 @@ import 'package:reddit_clone/features/auth/view_model/auth_view_model.dart';
 import 'package:reddit_clone/features/community/viewmodel/community_viewmodel.dart';
 import 'package:reddit_clone/features/posts/viewmodel/add_post_viewmodel.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:routemaster/routemaster.dart';
 
 class PostCard extends ConsumerWidget {
   final Post post;
@@ -54,6 +55,14 @@ class PostCard extends ConsumerWidget {
     ref.read(addPostViewModelProvider.notifier).downvote(post);
   }
 
+  void navigateToCommunity(BuildContext context) {
+    Routemaster.of(context).push('/r/${post.communityName}');
+  }
+
+  void navigateToUser(BuildContext context) {
+    Routemaster.of(context).push('/u/${post.uid}');
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isTypeImage = post.type == 'image';
@@ -85,11 +94,14 @@ class PostCard extends ConsumerWidget {
                             children: [
                               Row(
                                 children: [
-                                  CircleAvatar(
-                                    backgroundImage: NetworkImage(
-                                      post.communityProfilePic,
+                                  GestureDetector(
+                                    onTap: () => navigateToCommunity(context),
+                                    child: CircleAvatar(
+                                      backgroundImage: NetworkImage(
+                                        post.communityProfilePic,
+                                      ),
+                                      radius: 16,
                                     ),
-                                    radius: 16,
                                   ),
                                   Padding(
                                     padding: EdgeInsets.only(left: 8),
@@ -97,16 +109,26 @@ class PostCard extends ConsumerWidget {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        Text(
-                                          'r/${post.communityName}',
-                                          style: const TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
+                                        GestureDetector(
+                                          onTap:
+                                              () =>
+                                                  navigateToCommunity(context),
+                                          child: Text(
+                                            'r/${post.communityName}',
+                                            style: const TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                           ),
                                         ),
-                                        Text(
-                                          'r/${post.username}',
-                                          style: const TextStyle(fontSize: 14),
+                                        GestureDetector(
+                                          onTap: () => navigateToUser(context),
+                                          child: Text(
+                                            'r/${post.username}',
+                                            style: const TextStyle(
+                                              fontSize: 14,
+                                            ),
+                                          ),
                                         ),
                                       ],
                                     ),
@@ -136,14 +158,18 @@ class PostCard extends ConsumerWidget {
                             ),
                           if (isTypeLink)
                             Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 18,
-                              ),
+                              padding: const EdgeInsets.only(top: 8.0),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(post.title),
-                                  SizedBox(height: 8),
+                                  Text(
+                                    post.title,
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  SizedBox(height: 5),
                                   AnyLinkPreview(
                                     displayDirection:
                                         UIDirection.uiDirectionHorizontal,
@@ -156,9 +182,6 @@ class PostCard extends ConsumerWidget {
                           if (isTypeText)
                             Container(
                               alignment: Alignment.bottomLeft,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 15.0,
-                              ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -260,7 +283,8 @@ class PostCard extends ConsumerWidget {
               ), // Expanded
             ],
           ), // Row
-        ), // Container
+        ),
+        Container(height: 2, color: Colors.black), // Container
       ],
     );
   }

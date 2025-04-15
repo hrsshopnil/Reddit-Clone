@@ -7,9 +7,9 @@ plugins {
 
 android {
     namespace = "com.example.reddit_clone"
-    compileSdk = 35 // Update to latest available compile SDK version
+    compileSdk = 35 // Latest compile SDK version
 
-    ndkVersion = "27.0.12077973" // Set a valid NDK version
+    ndkVersion = "27.0.12077973" // Valid NDK version
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -17,7 +17,7 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.toString()
+        jvmTarget = "17" // ✅ FIXED: Set Kotlin target to match Java
     }
 
     defaultConfig {
@@ -35,7 +35,6 @@ android {
         }
     }
 }
-
 
 dependencies {
     implementation(platform("com.google.firebase:firebase-bom:32.7.4"))
