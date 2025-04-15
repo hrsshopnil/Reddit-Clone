@@ -61,14 +61,25 @@ class _AddPostTypePageState extends ConsumerState<AddPostTypePage> {
           TextButton(
             onPressed: () {
               if (selectedCommunity != null) {
-                ref
-                    .read(addPostViewModelProvider.notifier)
-                    .addPost(
-                      context,
-                      titleController.text,
-                      selectedCommunity!,
-                      descriptionController.text,
-                    );
+                if (isTypeText) {
+                  ref
+                      .read(addPostViewModelProvider.notifier)
+                      .shareTextPost(
+                        context,
+                        titleController.text,
+                        selectedCommunity!,
+                        descriptionController.text,
+                      );
+                } else if (isTypeLink) {
+                  ref
+                      .read(addPostViewModelProvider.notifier)
+                      .shareLinkPost(
+                        context: context,
+                        title: titleController.text,
+                        selectedCommunity: selectedCommunity!,
+                        link: linkController.text,
+                      );
+                }
               } else {
                 showSnackBar(context, 'Please select a community');
               }

@@ -47,7 +47,7 @@ class CommunityRepository {
       return Stream.value([]);
     }
 
-    return _communities
+    final userCommunities = _communities
         .where('id', whereIn: communities)
         .snapshots()
         .map(
@@ -59,6 +59,8 @@ class CommunityRepository {
                   )
                   .toList(),
         );
+    print(userCommunities.first);
+    return userCommunities;
   }
 
   Stream<Community> getCommunityByName(String name) {

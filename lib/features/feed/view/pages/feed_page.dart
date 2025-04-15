@@ -15,12 +15,10 @@ class FeedPage extends ConsumerWidget {
         .watch(userCommunitiesProvider)
         .when(
           data: (communities) {
-            print('communities: $communities');
             return ref
                 .watch(getUserPostsProvider(communities))
                 .when(
                   data: (data) {
-                    print(data);
                     return ListView.builder(
                       itemCount: data.length,
                       itemBuilder: (BuildContext context, int index) {
@@ -30,7 +28,6 @@ class FeedPage extends ConsumerWidget {
                     );
                   },
                   error: (error, stackTrace) {
-                    print(error);
                     return ErrorText(error: error.toString());
                   },
                   loading: () => const Loader(),

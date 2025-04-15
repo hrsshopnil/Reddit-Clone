@@ -40,7 +40,51 @@ class AddPostRepository {
           for (var doc in event.docs) {
             posts.add(Post.fromMap(doc.data() as Map<String, dynamic>));
           }
+          print(posts);
           return posts;
         });
+  }
+
+  FutureVoid deletePost(String postId) async {
+    try {
+      await _posts.doc(postId).delete();
+      return right(null);
+    } catch (e) {
+      return left(Failure(e.toString()));
+    }
+  }
+
+  void upvote(Post post, String uid) async {
+    if (post.upvotes.contains(uid)) {
+      _posts.doc(post.id).update({
+        'upvotes': FieldValue.arrayRemove([uid]),
+      });
+    } else if (post.downvotes.contains(uid)) {
+      _posts.doc(post.id).update({
+        'downvotes': FieldValue.arrayRemove([uid]),
+        'upvotes': FieldValue.arrayUnion([uid]),
+      });
+    } else {
+      _posts.doc(post.id).update({
+        'upvotes': FieldValue.arrayUnion([uid]),
+      });
+    }
+  }
+
+  void downvote(Post post, String uid) async {
+    if (post.downvotes.contains(uid)) {
+      _posts.doc(post.id).update({
+        'downvotes': FieldValue.arrayRemove([uid]),
+      });
+    } else if (post.upvotes.contains(uid)) {
+      _posts.doc(post.id).update({
+        'upvotes': FieldValue.arrayRemove([uid]),
+        'downvotes': FieldValue.arrayUnion([uid]),
+      });
+    } else {
+      _posts.doc(post.id).update({
+        'downvotes': FieldValue.arrayUnion([uid]),
+      });
+    }
   }
 }
