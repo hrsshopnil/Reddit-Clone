@@ -5,6 +5,8 @@ import 'package:reddit_clone/core/widgets/error_text.dart';
 import 'package:reddit_clone/core/widgets/loader.dart';
 import 'package:reddit_clone/features/auth/view_model/auth_view_model.dart';
 import 'package:reddit_clone/features/community/view/widgets/join_button.dart';
+import 'package:reddit_clone/features/posts/viewmodel/add_post_viewmodel.dart';
+import 'package:reddit_clone/features/user_profile/view_model.dart/edit_profile_viewmodel.dart';
 import 'package:routemaster/routemaster.dart';
 
 class UserProfilePage extends ConsumerWidget {
@@ -78,7 +80,23 @@ class UserProfilePage extends ConsumerWidget {
                       ),
                     ];
                   },
-                  body: Container(),
+                  body: ref
+                      .watch(getUserPostsProviders(uid))
+                      .when(
+                        data:
+                            (data) => ListView.builder(
+                              itemCount: data.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                final post = data[index];
+                                return Text(post.title);
+                              },
+                            ),
+                        error: (error, stackTrace) {
+                          print(error);
+                          return ErrorText(error: error.toString());
+                        },
+                        loading: () => const Loader(),
+                      ),
                 ),
             error: (error, stackTrace) => ErrorText(error: error.toString()),
             loading: () => const Loader(),

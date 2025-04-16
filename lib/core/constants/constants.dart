@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:reddit_clone/features/feed/view/pages/feed_page.dart';
-import 'package:reddit_clone/features/posts/pages/add_post_page.dart';
+import 'package:reddit_clone/features/posts/view/pages/add_post_page.dart';
 
 class Constants {
   static const logoPath = 'assets/images/logo.png';

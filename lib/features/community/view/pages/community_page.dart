@@ -6,6 +6,7 @@ import 'package:reddit_clone/features/auth/view_model/auth_view_model.dart';
 import 'package:reddit_clone/features/community/model/community_model.dart';
 import 'package:reddit_clone/features/community/view/widgets/join_button.dart';
 import 'package:reddit_clone/features/community/viewmodel/community_viewmodel.dart';
+import 'package:reddit_clone/features/feed/view/widgets/post_card.dart';
 import 'package:routemaster/routemaster.dart';
 
 class CommunityPage extends ConsumerWidget {
@@ -50,7 +51,9 @@ class CommunityPage extends ConsumerWidget {
                         ),
                       ),
                       SliverPadding(
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                        ).copyWith(top: 8),
                         sliver: SliverList(
                           delegate: SliverChildListDelegate([
                             Align(
@@ -60,7 +63,7 @@ class CommunityPage extends ConsumerWidget {
                                 radius: 35,
                               ),
                             ),
-                            const SizedBox(height: 10),
+                            //const SizedBox(height: 10),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -98,14 +101,29 @@ class CommunityPage extends ConsumerWidget {
                                     ),
                               ],
                             ),
-                            const SizedBox(width: 10),
                             Text('${community.members.length} members'),
                           ]),
                         ),
                       ),
                     ];
                   },
-                  body: Container(),
+                  body: ref
+                      .watch(getCommunityPostsProvider(name))
+                      .when(
+                        data:
+                            (data) => ListView.builder(
+                              itemCount: data.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                final post = data[index];
+                                return PostCard(post: post);
+                              },
+                            ),
+                        error:
+                            (error, stackTrace) =>
+                                ErrorText(error: error.toString()),
+
+                        loading: () => const Loader(),
+                      ),
                 ),
             error: (error, stackTrace) => ErrorText(error: error.toString()),
             loading: () => const Loader(),

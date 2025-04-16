@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:reddit_clone/core/constants/constants.dart';
 import 'package:reddit_clone/core/failure.dart';
+import 'package:reddit_clone/core/models/post_model.dart';
 import 'package:reddit_clone/core/utils.dart';
 import 'package:reddit_clone/features/auth/view_model/auth_view_model.dart';
 import 'package:reddit_clone/features/community/model/community_model.dart';
@@ -33,6 +34,11 @@ final getCommunityByNameProvider = StreamProvider.family((ref, String name) {
 final searchCommunityProvider = StreamProvider.family((ref, String query) {
   final communityRepo = ref.watch(communityRepositoryProvider);
   return communityRepo.searchCommunity(query);
+});
+
+final getCommunityPostsProvider = StreamProvider.family((ref, String name) {
+  final communityRepo = ref.watch(communityRepositoryProvider);
+  return communityRepo.getCommunityPosts(name);
 });
 
 class CommunityViewmodel extends StateNotifier<bool> {
@@ -120,5 +126,9 @@ class CommunityViewmodel extends StateNotifier<bool> {
       (l) => showSnackBar(context, l.message),
       (r) => Routemaster.of(context).pop(),
     );
+  }
+
+  Stream<List<Post>> getCommunityPosts(String communityName) {
+    return _communityRepository.getCommunityPosts(communityName);
   }
 }

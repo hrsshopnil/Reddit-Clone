@@ -4,6 +4,7 @@ import 'package:reddit_clone/core/models/post_model.dart';
 import 'package:reddit_clone/core/utils.dart';
 import 'package:reddit_clone/features/auth/view_model/auth_view_model.dart';
 import 'package:reddit_clone/features/community/model/community_model.dart';
+import 'package:reddit_clone/features/posts/model/comment_model.dart';
 import 'package:reddit_clone/features/posts/repository/add_post_repository.dart';
 import 'package:routemaster/routemaster.dart';
 import 'package:uuid/uuid.dart';
@@ -15,12 +16,22 @@ final addPostViewModelProvider = StateNotifierProvider<AddPostViewmodel, bool>(
   ),
 );
 
+final getPostByIdProvider = StreamProvider.family((ref, String id) {
+  final addPostViewModel = ref.watch(addPostViewModelProvider.notifier);
+  return addPostViewModel.getPostById(id);
+});
+
 final getUserPostsProvider = StreamProvider.family((
   ref,
   List<Community> communities,
 ) {
   final addPostViewModel = ref.watch(addPostViewModelProvider.notifier);
   return addPostViewModel.getUserPosts(communities);
+});
+
+final getCommentsByPostProvider = StreamProvider.family((ref, String postId) {
+  final addPostViewModel = ref.watch(addPostViewModelProvider.notifier);
+  return addPostViewModel.getCommentsByPost(postId);
 });
 
 class AddPostViewmodel extends StateNotifier<bool> {
@@ -129,5 +140,33 @@ class AddPostViewmodel extends StateNotifier<bool> {
   void downvote(Post post) {
     final uid = _ref.read(userProvider)!.uid;
     _addPostRepository.downvote(post, uid);
+  }
+
+  Stream<Post> getPostById(String id) {
+    return _addPostRepository.getPostById(id);
+  }
+
+  void addComment({
+    required BuildContext context,
+    required String text,
+    required Post post,
+  }) async {
+    final user = _ref.read(userProvider)!;
+    String commentId = const Uuid().v1();
+    Comment comment = Comment(
+      id: commentId,
+      text: text,
+      createdAt: DateTime.now(),
+      postId: post.id,
+      username: user.name,
+      profilePic: user.profilePic,
+    );
+    final res = await _addPostRepository.addComment(comment);
+    //_ref.read(userProfileControllerProvider.notifier).updateUserKarma(UserKarma.comment);
+    res.fold((l) => showSnackBar(context, l.message), (r) => null);
+  }
+
+  Stream<List<Comment>> getCommentsByPost(String postId) {
+    return _addPostRepository.getCommentsByPost(postId);
   }
 }
