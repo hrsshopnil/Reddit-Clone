@@ -43,4 +43,13 @@ class UserProfileRepository {
                   .toList(),
         );
   }
+
+  FutureVoid updateKarma(UserModel user) async {
+    try {
+      final updatedUser = _user.doc(user.uid).update({'karma': user.karma});
+      return right(updatedUser);
+    } catch (e) {
+      return left(Failure(e.toString()));
+    }
+  }
 }

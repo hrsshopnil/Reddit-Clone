@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:reddit_clone/core/enums.dart';
 import 'package:reddit_clone/core/models/post_model.dart';
 import 'package:reddit_clone/core/utils.dart';
 import 'package:reddit_clone/features/auth/view_model/auth_view_model.dart';
 import 'package:reddit_clone/features/community/model/community_model.dart';
 import 'package:reddit_clone/features/posts/model/comment_model.dart';
 import 'package:reddit_clone/features/posts/repository/add_post_repository.dart';
+import 'package:reddit_clone/features/user_profile/view_model.dart/edit_profile_viewmodel.dart';
 import 'package:routemaster/routemaster.dart';
 import 'package:uuid/uuid.dart';
 
@@ -73,6 +75,9 @@ class AddPostViewmodel extends StateNotifier<bool> {
     );
 
     final res = await _addPostRepository.addPost(post);
+    _ref
+        .read(userProfileViewModelProvider.notifier)
+        .updateKarma(UserKarma.textPost);
 
     state = false;
 
@@ -109,7 +114,9 @@ class AddPostViewmodel extends StateNotifier<bool> {
     );
 
     final res = await _addPostRepository.addPost(post);
-    //_ref.read(userProfileControllerProvider.notifier).updateUserKarma(UserKarma.linkPost);
+    _ref
+        .read(userProfileViewModelProvider.notifier)
+        .updateKarma(UserKarma.linkPost);
     state = false;
     res.fold((l) => showSnackBar(context, l.message), (r) {
       showSnackBar(context, 'Posted successfully!');
@@ -128,6 +135,9 @@ class AddPostViewmodel extends StateNotifier<bool> {
     state = true;
     final res = await _addPostRepository.deletePost(postId);
     state = false;
+    _ref
+        .read(userProfileViewModelProvider.notifier)
+        .updateKarma(UserKarma.deletePost);
 
     res.fold((l) => null, (r) => null);
   }
@@ -162,7 +172,9 @@ class AddPostViewmodel extends StateNotifier<bool> {
       profilePic: user.profilePic,
     );
     final res = await _addPostRepository.addComment(comment);
-    //_ref.read(userProfileControllerProvider.notifier).updateUserKarma(UserKarma.comment);
+    _ref
+        .read(userProfileViewModelProvider.notifier)
+        .updateKarma(UserKarma.comment);
     res.fold((l) => showSnackBar(context, l.message), (r) => null);
   }
 
