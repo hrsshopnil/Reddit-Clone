@@ -181,4 +181,25 @@ class AddPostViewmodel extends StateNotifier<bool> {
   Stream<List<Comment>> getCommentsByPost(String postId) {
     return _addPostRepository.getCommentsByPost(postId);
   }
+
+  void awardPost({
+    required Post post,
+    required String award,
+    required BuildContext context,
+  }) async {
+    final user = _ref.read(userProvider)!;
+
+    final res = await _addPostRepository.awardPost(post, award, user.uid);
+
+    res.fold((l) => showSnackBar(context, l.message), (r) {
+      _ref
+          .read(userProfileViewModelProvider.notifier)
+          .updateKarma(UserKarma.awardPost);
+      _ref.read(userProvider.notifier).update((state) {
+        state?.awards.remove(award);
+        return state;
+      });
+      Routemaster.of(context).pop();
+    });
+  }
 }

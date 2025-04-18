@@ -4,9 +4,14 @@ import 'package:reddit_clone/core/constants/constants.dart';
 import 'package:reddit_clone/core/widgets/loader.dart';
 import 'package:reddit_clone/core/widgets/signin_button.dart';
 import 'package:reddit_clone/features/auth/view_model/auth_view_model.dart';
+import 'package:reddit_clone/responsive.dart';
 
 class LoginPage extends ConsumerWidget {
   const LoginPage({super.key});
+
+  void signInAsGuest(WidgetRef ref, BuildContext context) {
+    ref.read(authViewModelProvider.notifier).signInAsGuest(context);
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -16,7 +21,7 @@ class LoginPage extends ConsumerWidget {
         title: Image.asset(Constants.logoPath, height: 40),
         actions: [
           TextButton(
-            onPressed: () {},
+            onPressed: () => signInAsGuest(ref, context),
             child: Text('Skip', style: TextStyle(fontWeight: FontWeight.bold)),
           ),
         ],
@@ -36,9 +41,9 @@ class LoginPage extends ConsumerWidget {
                       ),
                     ),
                     SizedBox(height: 40),
-                    Image.asset(Constants.loginEmotePath),
+                    Image.asset(Constants.loginEmotePath, height: 400),
                     SizedBox(height: 50),
-                    SigninButton(),
+                    Responsive(child: SigninButton()),
                   ],
                 ),
               ),

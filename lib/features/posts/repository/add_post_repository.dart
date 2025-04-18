@@ -19,6 +19,7 @@ class AddPostRepository {
     : _firebaseFirestore = firebaseFirestore;
 
   CollectionReference get _posts => _firebaseFirestore.collection('posts');
+  CollectionReference get _users => _firebaseFirestore.collection('users');
   CollectionReference get _comments =>
       _firebaseFirestore.collection('comments');
 
@@ -126,5 +127,25 @@ class AddPostRepository {
                   .map((e) => Comment.fromMap(e.data() as Map<String, dynamic>))
                   .toList(),
         );
+  }
+
+  FutureVoid awardPost(Post post, String award, String senderId) async {
+    try {
+      _posts.doc(post.id).update({
+        'awards': FieldValue.arrayUnion([award]),
+      });
+      _users.doc(senderId).update({
+        'awards': FieldValue.arrayRemove([award]),
+      });
+      return right(
+        _users.doc(post.uid).update({
+          'awards': FieldValue.arrayUnion([award]),
+        }),
+      );
+    } on FirebaseException catch (e) {
+      throw e.message!;
+    } catch (e) {
+      return left(Failure(e.toString()));
+    }
   }
 }
