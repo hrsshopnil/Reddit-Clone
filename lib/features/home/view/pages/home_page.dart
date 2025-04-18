@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:reddit_clone/core/constants/constants.dart';
@@ -73,16 +74,25 @@ class _HomePageState extends ConsumerState<HomePage> {
       body: Constants.tabWidgets[page],
       drawer: CommunityListDrawer(),
       endDrawer: ProfileDrawer(),
-      bottomNavigationBar: CupertinoTabBar(
-        activeColor: currentTheme.iconTheme.color,
-        backgroundColor: currentTheme.scaffoldBackgroundColor,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.add), label: 'Create'),
-        ],
-        onTap: onPageChanged,
-        currentIndex: page,
-      ),
+      bottomNavigationBar:
+          kIsWeb
+              ? null
+              : CupertinoTabBar(
+                activeColor: currentTheme.iconTheme.color,
+                backgroundColor: currentTheme.scaffoldBackgroundColor,
+                items: const [
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.home),
+                    label: 'Home',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.add),
+                    label: 'Create',
+                  ),
+                ],
+                onTap: onPageChanged,
+                currentIndex: page,
+              ),
     );
   }
 }
